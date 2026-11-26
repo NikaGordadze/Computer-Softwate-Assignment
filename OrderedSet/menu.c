@@ -144,7 +144,12 @@ int readIndex(FILE *in)
 void createSetOption(OrderedIntSet *SetsArray[],FILE *inputFile ){
     //read index from file
     int index;
-    fscanf(inputFile,"%d",&index);
+    index = readIndex(inputFile);
+    //returns -1 if index is not valid
+    if (index == -1) {
+        printf("Invalid index\n");
+        return;
+    }
 
     //delete old set if it exists
     if (SetsArray[index]!=NULL){
@@ -166,7 +171,12 @@ void createSetOption(OrderedIntSet *SetsArray[],FILE *inputFile ){
 void deleteSetOption(OrderedIntSet *SetsArray[],FILE *inputFile){
     //read index from file
     int index;
-    fscanf(inputFile,"%d",&index);
+    index = readIndex(inputFile);
+    //returns -1 if index is not valid
+    if (index == -1) {
+        printf("Invalid index\n");
+        return;
+    }
     //delete set if it exists
     if (SetsArray[index]!=NULL){
         deleteOrderedSet(SetsArray[index]);
