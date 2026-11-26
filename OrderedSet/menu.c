@@ -134,3 +134,43 @@ int readIndex(FILE *in)
 
     return index;
 }
+/**
+ * @brief Create an order set.
+ *
+ * Creates a new set and stores it in the
+ * selected array position.
+ * @param SetsArray Array of ordered sets.
+ */
+void createSetOption(OrderedIntSet *SetsArray[],FILE *inputFile ){
+    //read index from file
+    int index;
+    fscanf(inputFile,"%d",&index);
+
+    //delete old set if it exists
+    if (SetsArray[index]!=NULL){
+        deleteOrderedSet(SetsArray[index]);
+    }
+
+    //create new set
+    SetsArray[index]=createOrderedSet();
+    //print success message
+    printf("Set %d created.\n", index);
+}
+
+/**
+ * @brief Deletes an ordered set.
+ *
+ * Removes a set from the array and frees its memory.
+ * @param SetsArray Array of ordered sets.
+ */
+void deleteSetOption(OrderedIntSet *SetsArray[],FILE *inputFile){
+    //read index from file
+    int index;
+    fscanf(inputFile,"%d",&index);
+    //delete set if it exists
+    if (SetsArray[index]!=NULL){
+        deleteOrderedSet(SetsArray[index]);
+    }
+    //remove pointer
+    SetsArray[index]=NULL;
+}

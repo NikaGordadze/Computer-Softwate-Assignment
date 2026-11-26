@@ -3,6 +3,35 @@
 #include "orderedIntSet.h"
 
 /**
+ * @brief Creates an empty ordered set.
+ *
+ * Creates a new set with empty double linked list
+ * @return Pointer to the created set.
+ */
+OrderedIntSet*createOrderedSet(void){
+    // create set
+    OrderedIntSet*set=(OrderedIntSet*)malloc(sizeof(OrderedIntSet));
+    // create empty list
+    set->list=createDoubleLinkedList();
+    //set count=0
+    set->count=0;
+    // return created set
+    return set;
+}
+/**
+ * @brief Deletes an ordered set.
+ *
+ * Deletes the list and frees the set memory.
+ * @param set Pointer to the set.
+ */
+void deleteOrderedSet(OrderedIntSet*set){
+    // delete list
+    deleteDoubleLinkedList(set->list);
+    // free set memory
+    free(set);
+}
+
+/**
  * @brief Adds elem to the ordered set at its sorted position.
  *
  * The list is kept in ascending order, so the list is searched for the

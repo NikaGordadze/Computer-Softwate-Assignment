@@ -1,5 +1,59 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "doubleLinkedList.h"
+
+/**
+ * @brief Creates an empty double linked list.
+ *
+ * Creates a new list with head and tail nodes.
+ *
+ * @return Pointer to the newly created list.
+ */
+// create a double linked list
+DoubleLinkedList*createDoubleLinkedList(void){
+    DoubleLinkedList*list=(DoubleLinkedList*)malloc(sizeof(DoubleLinkedList));
+    // create head and tail nodes
+    DListNode*head=malloc(sizeof(DListNode));
+    DListNode*tail=malloc(sizeof(DListNode));
+    // connect head and tail
+    head->next=tail;
+    head->prev=NULL;
+
+    tail->next=NULL;
+    tail->prev=head;
+    // save pointers in list
+    list->head=head;
+    list->tail=tail;
+
+    // current starts at head
+    list->current=head;
+
+    // return list
+    return list;
+}
+/**
+ * @brief Deletes a double linked list.
+ *
+ * Frees all nodes including head and tail
+ * and releases list memory.
+ *
+ * @param list Pointer to the list.
+ */
+void deleteDoubleLinkedList(DoubleLinkedList*list){
+    // start from head node in the list
+    DListNode*current=list->head;
+
+    // delete all nodes
+    while (current!= NULL){
+        DListNode*temp=current;
+        //move to next node
+        current=current->next;
+        //free current node
+        free(temp);
+    }
+    // free list structure
+    free(list);
+}
 
 /**
  * @brief Inserts a new node holding newData after the current node.
