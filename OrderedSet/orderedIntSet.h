@@ -1,0 +1,4 @@
+#ifndef ORDEREDINTSET_H
+#define ORDEREDINTSET_H
+
+#endif // ORDEREDINTSET_H
