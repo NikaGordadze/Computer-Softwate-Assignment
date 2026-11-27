@@ -155,6 +155,7 @@ int readIndex(FILE *in)
  * Creates a new set and stores it in the
  * selected array position.
  * @param SetsArray Array of ordered sets.
+ * @param inputFile File the index is read from.
  */
 void createSetOption(OrderedIntSet *SetsArray[],FILE *inputFile ){
     //read index from file
@@ -183,6 +184,7 @@ void createSetOption(OrderedIntSet *SetsArray[],FILE *inputFile ){
  *
  * Removes a set from the array and frees its memory.
  * @param SetsArray Array of ordered sets.
+ * @param inputFile File the index is read from.
  */
 void deleteSetOption(OrderedIntSet *SetsArray[],FILE *inputFile){
     //read index from file
@@ -249,6 +251,10 @@ void addElementsOption(FILE *in, OrderedIntSet *setsArray[])
     if (index < 0 || index >= MAX_SETS || setsArray[index] == NULL)
     {
         printf("Invalid index or set %d does not exist.\n", index);
+        //skip the numbers meant for this set, otherwise they get read as menu choices
+        while (fscanf(in, "%d", &number) == 1 && number >= 0)
+        {
+        }
         return;
     }
 
@@ -302,6 +308,10 @@ void removeElementsOption(FILE *in, OrderedIntSet *setsArray[])
     if (index < 0 || index >= MAX_SETS || setsArray[index] == NULL)
     {
         printf("Invalid index or set %d does not exist.\n", index);
+        //skip the numbers meant for this set, otherwise they get read as menu choices
+        while (fscanf(in, "%d", &number) == 1 && number >= 0)
+        {
+        }
         return;
     }
 

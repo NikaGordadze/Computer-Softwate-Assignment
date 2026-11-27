@@ -12,24 +12,13 @@
  * Stores a double linked list and the number
  * of elements in the set.
  */
-typedef struct OrderedIntSet{
-    DoubleLinkedList *list;
-    int count;
-}OrderedIntSet;
-/**
- * @brief Creates an empty ordered set.
- *
- * Creates a new set with an empty
- * double linked list.
- * @return Pointer to the created set.
- */
+typedef struct OrderedIntSet
+{
+    DoubleLinkedList *list;     /**< list holding the numbers in ascending order */
+    int count;                  /**< number of elements in the set */
+} OrderedIntSet;
+
 OrderedIntSet *createOrderedSet(void);
-/**
- * @brief Deletes an ordered set.
- *
- * Frees the list and the set memory.
- * @param set Pointer to the set.
- */
 void deleteOrderedSet(OrderedIntSet *set);
 
 /**

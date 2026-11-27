@@ -115,10 +115,6 @@ SetStatus removeElement(OrderedIntSet *s, int elem)
 /**
  * @brief Checks whether the current node of a list is the tail.
  *
- * Small helper so the end-of-list test lives in one place. If the
- * double linked list offers its own function for this (e.g. isTail()),
- * just call it here instead.
- *
  * @param list the double linked list to check
  * @return 1 if current node is the tail, 0 otherwise
  */
