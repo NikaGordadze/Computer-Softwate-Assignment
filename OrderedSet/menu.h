@@ -1,3 +1,8 @@
+/**
+ * @file menu.h
+ * @brief Declarations for the menu options of the ordered set test program.
+ */
+
 #ifndef MENU_H
 #define MENU_H
 #include <stdio.h>

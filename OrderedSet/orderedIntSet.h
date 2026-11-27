@@ -1,3 +1,8 @@
+/**
+ * @file orderedIntSet.h
+ * @brief Ordered set of integers built on a double linked list.
+ */
+
 #ifndef ORDEREDINTSET_H
 #define ORDEREDINTSET_H
 #include "doubleLinkedList.h"

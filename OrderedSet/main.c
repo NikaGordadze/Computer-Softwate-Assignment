@@ -1,3 +1,8 @@
+/**
+ * @file main.c
+ * @brief Test program that reads menu choices from textInput.txt and runs them.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "menu.h"

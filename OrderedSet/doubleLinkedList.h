@@ -1,3 +1,8 @@
+/**
+ * @file doubleLinkedList.h
+ * @brief Double linked list of integers with dummy head and tail nodes.
+ */
+
 #ifndef DOUBLELINKEDLIST_H
 #define DOUBLELINKEDLIST_H
 /**

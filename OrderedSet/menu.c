@@ -1,3 +1,8 @@
+/**
+ * @file menu.c
+ * @brief Menu options for creating, editing, storing and combining ordered sets.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "orderedIntSet.h"

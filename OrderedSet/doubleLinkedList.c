@@ -1,3 +1,8 @@
+/**
+ * @file doubleLinkedList.c
+ * @brief Implementation of the double linked list operations.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "doubleLinkedList.h"

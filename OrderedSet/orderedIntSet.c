@@ -1,3 +1,8 @@
+/**
+ * @file orderedIntSet.c
+ * @brief Implementation of the ordered integer set operations.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "orderedIntSet.h"
