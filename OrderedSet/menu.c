@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "orderedIntSet.h"
+#include "menu.h"
 
 /* Patrick Barry (25403842) - menu options 7, 8 and 9.*/
-
-#define MAX_SETS 10 /**< number of sets in SetsArray (delete if someone already defined it) */
 
 /** Pointer to one of the set operations (setIntersection, setUnion, setDifference). */
 typedef OrderedIntSet *(*SetOperation)(OrderedIntSet *, OrderedIntSet *);
@@ -41,19 +40,19 @@ static void setOperationOption(OrderedIntSet *setsArray[], FILE *input,
 
     if (fscanf(input, "%d %d %d", &i1, &i2, &i3) != 3)
     {
-        printf("%s: could not read three indices\n\n", name);
+        printf("%s: could not read three indices\n", name);
         return;
     }
 
     if (!validIndex(i1) || !validIndex(i2) || !validIndex(i3))
     {
-        printf("%s: indices must be in range 0-%d\n\n", name, MAX_SETS - 1);
+        printf("%s: indices must be in range 0-%d\n", name, MAX_SETS - 1);
         return;
     }
 
     if (setsArray[i1] == NULL || setsArray[i2] == NULL)
     {
-        printf("%s: set %d or set %d does not exist\n\n", name, i1, i2);
+        printf("%s: set %d or set %d does not exist\n", name, i1, i2);
         return;
     }
 
@@ -61,7 +60,7 @@ static void setOperationOption(OrderedIntSet *setsArray[], FILE *input,
     result = operation(setsArray[i1], setsArray[i2]);
     if (result == NULL)
     {
-        printf("%s: ALLOCATION_ERROR\n\n", name);
+        printf("%s: ALLOCATION_ERROR\n", name);
         return;
     }
 
@@ -183,4 +182,283 @@ void deleteSetOption(OrderedIntSet *SetsArray[],FILE *inputFile){
     }
     //remove pointer
     SetsArray[index]=NULL;
+    //print success message
+    printf("Set %d deleted.\n", index);
+}
+
+/* Denys Denysov (25461192) - initSetsArray, addElementsOption, removeElementsOption, storeSetsOption, loadSetsOption */
+
+/** Name of the binary file used to store/load the SetsArray. */
+#define SETS_FILE_NAME "SetsArrayFile.bin"
+
+/**
+ * @brief initSetsArray
+ * Sets all entries of the sets array to NULL.
+ * @param setsArray array of MAX_SETS pointers to ordered sets
+ */
+void initSetsArray(OrderedIntSet *setsArray[])
+{
+    int i;
+
+    for (i = 0; i < MAX_SETS; i++)
+    {
+        setsArray[i] = NULL;
+    }
+}
+
+/**
+ * @brief addElementsOption (menu 3)
+ * Add elements to an ordered set.
+ *
+ * Reads the set index, then reads numbers until a negative number is read.
+ * Each number is added with addElement() and the result is reported.
+ * The set is printed.
+ *
+ * @param in input file (textInput.txt)
+ * @param setsArray array of MAX_SETS pointers to ordered sets
+ */
+void addElementsOption(FILE *in, OrderedIntSet *setsArray[])
+{
+    int index;
+    int number;
+
+    if (fscanf(in, "%d", &index) != 1)
+    {
+        printf("Could not read set index.\n");
+        return;
+    }
+    if (index < 0 || index >= MAX_SETS || setsArray[index] == NULL)
+    {
+        printf("Invalid index or set %d does not exist.\n", index);
+        return;
+    }
+
+    while (fscanf(in, "%d", &number) == 1 && number >= 0)
+    {
+        switch (addElement(setsArray[index], number))
+        {
+        case NUMBER_ADDED:
+            printf("%d: NUMBER_ADDED\n", number);
+            break;
+        case NUMBER_ALREADY_IN_SET:
+            printf("%d: NUMBER_ALREADY_IN_SET\n", number);
+            break;
+        case ALLOCATION_ERROR:
+            printf("%d: ALLOCATION_ERROR\n", number);
+            break;
+        default:
+            break;
+        }
+    }
+
+    printToStdout(setsArray[index]);
+    printf("\n");
+}
+
+/**
+ * @brief removeElementsOption (menu 4)
+ * Removes elements from an ordered set.
+ *
+ * Reads the set index, then reads numbers until a negative number is read.
+ * Each number is removed with removeElement() and the result is reported.
+ * The set is printed.
+ *
+ * @param in input file (textInput.txt)
+ * @param setsArray array of MAX_SETS pointers to ordered sets
+ */
+void removeElementsOption(FILE *in, OrderedIntSet *setsArray[])
+{
+    int index;
+    int number;
+
+    if (fscanf(in, "%d", &index) != 1)
+    {
+        printf("Could not read set index.\n");
+        return;
+    }
+    if (index < 0 || index >= MAX_SETS || setsArray[index] == NULL)
+    {
+        printf("Invalid index or set %d does not exist.\n", index);
+        return;
+    }
+
+    while (fscanf(in, "%d", &number) == 1 && number >= 0)
+    {
+        switch (removeElement(setsArray[index], number))
+        {
+        case NUMBER_REMOVED:
+            printf("%d: NUMBER_REMOVED\n", number);
+            break;
+        case NUMBER_NOT_IN_SET:
+            printf("%d: NUMBER_NOT_IN_SET\n", number);
+            break;
+        case ALLOCATION_ERROR:
+            printf("%d: ALLOCATION_ERROR\n", number);
+            break;
+        default:
+            break;
+        }
+    }
+
+    printToStdout(setsArray[index]);
+    printf("\n");
+}
+
+/**
+ * @brief storeSetsOption (menu 5)
+ * Stores the entire SetsArray in "SetsArrayFile.bin".
+ *
+ * File format: for each of the MAX_SETS entries an int flag (0 = no set,
+ * 1 = set present). If the flag is 1, an int with the number of elements
+ * follows, followed by the elements (ints) in ascending order.
+ *
+ * @param setsArray array of MAX_SETS pointers to ordered sets
+ */
+void storeSetsOption(OrderedIntSet *setsArray[])
+{
+    FILE *file;
+    int i;
+    int k;
+    int present;
+    int count;
+    int value;
+
+    file = fopen(SETS_FILE_NAME, "wb");
+    if (file == NULL)
+    {
+        printf("Could not open %s for writing.\n", SETS_FILE_NAME);
+        return;
+    }
+
+    for (i = 0; i < MAX_SETS; i++)
+    {
+        present = (setsArray[i] != NULL);
+        if (fwrite(&present, sizeof(int), 1, file) != 1)
+        {
+            printf("Write to %s failed.\n", SETS_FILE_NAME);
+            fclose(file);
+            return;
+        }
+        if (!present)
+        {
+            continue;
+        }
+
+        count = setsArray[i]->count;
+        if (fwrite(&count, sizeof(int), 1, file) != 1)
+        {
+            printf("Write to %s failed.\n", SETS_FILE_NAME);
+            fclose(file);
+            return;
+        }
+
+        gotoHead(setsArray[i]->list);
+        for (k = 0; k < count; k++)
+        {
+            gotoNextNode(setsArray[i]->list);
+            value = getData(setsArray[i]->list);
+            if (fwrite(&value, sizeof(int), 1, file) != 1)
+            {
+                printf("Write to %s failed.\n", SETS_FILE_NAME);
+                fclose(file);
+                return;
+            }
+        }
+    }
+
+    fclose(file);
+    printf("Sets stored to %s.\n", SETS_FILE_NAME);
+}
+
+/**
+ * @brief loadSetsOption (menu 6)
+ * Loads the entire SetsArray from "SetsArrayFile.bin".
+ *
+ * The file is first read into a temporary array. Only if the whole file was
+ * read successfully, the old sets are deleted and replaced by the loaded ones.
+ *
+ * @param setsArray array of MAX_SETS pointers to ordered sets
+ */
+void loadSetsOption(OrderedIntSet *setsArray[])
+{
+    FILE *file;
+    OrderedIntSet *loaded[MAX_SETS];
+    int i;
+    int k;
+    int present;
+    int count;
+    int value;
+    int ok = 1;
+
+    file = fopen(SETS_FILE_NAME, "rb");
+    if (file == NULL)
+    {
+        printf("Could not open %s for reading.\n", SETS_FILE_NAME);
+        return;
+    }
+
+    initSetsArray(loaded);
+
+    for (i = 0; i < MAX_SETS && ok; i++)
+    {
+        if (fread(&present, sizeof(int), 1, file) != 1)
+        {
+            ok = 0;
+            break;
+        }
+        if (!present)
+        {
+            continue;
+        }
+
+        if (fread(&count, sizeof(int), 1, file) != 1 || count < 0)
+        {
+            ok = 0;
+            break;
+        }
+
+        loaded[i] = createOrderedSet();
+        if (loaded[i] == NULL)
+        {
+            ok = 0;
+            break;
+        }
+
+        for (k = 0; k < count; k++)
+        {
+            if (fread(&value, sizeof(int), 1, file) != 1 ||
+                addElement(loaded[i], value) == ALLOCATION_ERROR)
+            {
+                ok = 0;
+                break;
+            }
+        }
+    }
+
+    fclose(file);
+
+    if (!ok)
+    {
+        printf("Loading from %s failed, sets unchanged.\n", SETS_FILE_NAME);
+        for (i = 0; i < MAX_SETS; i++)
+        {
+            if (loaded[i] != NULL)
+            {
+                deleteOrderedSet(loaded[i]);
+            }
+        }
+        return;
+    }
+
+    /* success: replace old sets by loaded ones */
+    for (i = 0; i < MAX_SETS; i++)
+    {
+        if (setsArray[i] != NULL)
+        {
+            deleteOrderedSet(setsArray[i]);
+        }
+        setsArray[i] = loaded[i];
+    }
+
+    printf("Sets loaded from %s.\n", SETS_FILE_NAME);
 }

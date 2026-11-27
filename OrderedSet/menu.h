@@ -24,4 +24,9 @@ void intersectionOption(OrderedIntSet *setsArray[], FILE *input);
 void unionOption(OrderedIntSet *setsArray[], FILE *input);
 void differenceOption(OrderedIntSet *setsArray[], FILE *input);
 int readIndex(FILE *in);
+void initSetsArray(OrderedIntSet *setsArray[]);
+void addElementsOption(FILE *in, OrderedIntSet *setsArray[]);
+void removeElementsOption(FILE *in, OrderedIntSet *setsArray[]);
+void storeSetsOption(OrderedIntSet *setsArray[]);
+void loadSetsOption(OrderedIntSet *setsArray[]);
 #endif // MENU_H
