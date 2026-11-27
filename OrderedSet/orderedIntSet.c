@@ -314,3 +314,27 @@ OrderedIntSet *setDifference(OrderedIntSet *s1, OrderedIntSet *s2)
 
     return result;
 }
+
+/**
+ * @brief Prints the set like {1, 2, 3}, or {} if it is empty
+ * @param s the ordered set to print
+ */
+void printToStdout(OrderedIntSet *s)
+{
+    // start after the head because the head has no number
+    DListNode *n = s->list->head->next;
+
+    printf("{");
+    while (n != s->list->tail)   // tail has no number either, so stop there
+    {
+        printf("%d", n->data);
+
+        // no comma after the last number
+        if (n->next != s->list->tail)
+        {
+            printf(", ");
+        }
+        n = n->next;   // go to the next node
+    }
+    printf("}");
+}

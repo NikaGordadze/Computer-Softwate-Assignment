@@ -164,3 +164,58 @@ ListStatus deleteCurrent(DoubleLinkedList *list)
     free(victim);
     return LIST_OK;
 }
+
+/**
+ * @brief Returns the number stored in the current node
+ * @param list the double linked list
+ * @return the data of the current node
+ */
+int getData(DoubleLinkedList *list)
+{
+    // current points to the node we want, so read its data
+    return list->current->data;
+}
+
+/**
+ * @brief Moves current one step forward, unless it is at the tail
+ * @param list the double linked list
+ */
+void gotoNextNode(DoubleLinkedList *list)
+{
+    // only move if we are not at the end already
+    if (list->current != list->tail)
+    {
+        list->current = list->current->next;   // step forward
+    }
+}
+
+/**
+ * @brief Moves current one step back, unless it is at the head
+ * @param list the double linked list
+ */
+void gotoPreviousNode(DoubleLinkedList *list)
+{
+    // only move if we are not at the start already
+    if (list->current != list->head)
+    {
+        list->current = list->current->prev;   // step back
+    }
+}
+
+/**
+ * @brief Moves current to the head
+ * @param list the double linked list
+ */
+void gotoHead(DoubleLinkedList *list)
+{
+    list->current = list->head;   // jump to the start
+}
+
+/**
+ * @brief Moves current to the tail
+ * @param list the double linked list
+ */
+void gotoTail(DoubleLinkedList *list)
+{
+    list->current = list->tail;   // jump to the end
+}
