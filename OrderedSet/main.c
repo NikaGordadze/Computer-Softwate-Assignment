@@ -25,8 +25,27 @@ int main(void)
 
     initSetsArray(setsArray);
 
-    while (fscanf(in, "%d", &choice) == 1 && choice != 10)
+    //print the menu once
+    printf("Choose from the following:\n"
+           "1) Create empty ordered set\n"
+           "2) Delete ordered set\n"
+           "3) Add element to ordered set\n"
+           "4) Remove element from ordered set\n"
+           "5) Store set of array to binary file\n"
+           "6) Load set of array from binary file\n"
+           "7) Set intersection\n"
+           "8) Set union\n"
+           "9) Set Difference\n"
+           "10) Terminate program\n\n");
+
+    while (fscanf(in, "%d", &choice) == 1)
     {
+        printf("Your choice: %d\n", choice);
+        if (choice == 10)
+        {
+            printf("\n");
+            break;
+        }
         switch (choice)
         {
         case 1:

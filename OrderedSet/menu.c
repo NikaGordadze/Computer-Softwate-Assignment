@@ -29,15 +29,18 @@ static int validIndex(int index)
  * @param input     file the indices are read from
  * @param operation set function to apply
  * @param name      name of the operation, used in messages
+ * @param lowerName lowercase name of the operation, used in prompts
  */
 static void setOperationOption(OrderedIntSet *setsArray[], FILE *input,
-                               SetOperation operation, const char *name)
+                               SetOperation operation, const char *name,
+                                const char *lowerName)
 {
     int i1;
     int i2;
     int i3;
     OrderedIntSet *result;
 
+    printf("Please enter three indices: two for sets to form %s of and one for the target set:\n", lowerName);
     if (fscanf(input, "%d %d %d", &i1, &i2, &i3) != 3)
     {
         printf("%s: could not read three indices\n", name);
@@ -52,7 +55,15 @@ static void setOperationOption(OrderedIntSet *setsArray[], FILE *input,
 
     if (setsArray[i1] == NULL || setsArray[i2] == NULL)
     {
-        printf("%s: set %d or set %d does not exist\n", name, i1, i2);
+        if (setsArray[i1] == NULL)
+        {
+            printf("No ordered set available at index %d. ", i1);
+        }
+        if (setsArray[i2] == NULL)
+        {
+            printf("No ordered set available at index %d. ", i2);
+        }
+        printf("Cannot perform set %s.\n", lowerName);
         return;
     }
 
@@ -71,7 +82,7 @@ static void setOperationOption(OrderedIntSet *setsArray[], FILE *input,
     }
     setsArray[i3] = result;
 
-    printf("%s of set %d and set %d stored at index %d: ", name, i1, i2, i3);
+    printf("Set %s = ", name);
     printToStdout(setsArray[i3]);
     printf("\n");
 }
@@ -83,7 +94,7 @@ static void setOperationOption(OrderedIntSet *setsArray[], FILE *input,
  */
 void intersectionOption(OrderedIntSet *setsArray[], FILE *input)
 {
-    setOperationOption(setsArray, input, setIntersection, "Intersection");
+    setOperationOption(setsArray, input, setIntersection, "Intersection", "intersection");
 }
 
 /**
@@ -93,7 +104,7 @@ void intersectionOption(OrderedIntSet *setsArray[], FILE *input)
  */
 void unionOption(OrderedIntSet *setsArray[], FILE *input)
 {
-    setOperationOption(setsArray, input, setUnion, "Union");
+    setOperationOption(setsArray, input, setUnion, "Union", "union");
 }
 
 /**
@@ -103,7 +114,7 @@ void unionOption(OrderedIntSet *setsArray[], FILE *input)
  */
 void differenceOption(OrderedIntSet *setsArray[], FILE *input)
 {
-    setOperationOption(setsArray, input, setDifference, "Difference");
+    setOperationOption(setsArray, input, setDifference, "Difference", "difference");
 }
 
 /**
@@ -143,6 +154,7 @@ int readIndex(FILE *in)
 void createSetOption(OrderedIntSet *SetsArray[],FILE *inputFile ){
     //read index from file
     int index;
+    printf("Please enter index (0 - 9) for set to be created:\n");
     index = readIndex(inputFile);
     //returns -1 if index is not valid
     if (index == -1) {
@@ -158,7 +170,7 @@ void createSetOption(OrderedIntSet *SetsArray[],FILE *inputFile ){
     //create new set
     SetsArray[index]=createOrderedSet();
     //print success message
-    printf("Set %d created.\n", index);
+    printf("Set at index %d created\n", index);
 }
 
 /**
@@ -170,6 +182,7 @@ void createSetOption(OrderedIntSet *SetsArray[],FILE *inputFile ){
 void deleteSetOption(OrderedIntSet *SetsArray[],FILE *inputFile){
     //read index from file
     int index;
+    printf("Please enter index (0 - 9) for set to be deleted:\n");
     index = readIndex(inputFile);
     //returns -1 if index is not valid
     if (index == -1) {
@@ -183,7 +196,7 @@ void deleteSetOption(OrderedIntSet *SetsArray[],FILE *inputFile){
     //remove pointer
     SetsArray[index]=NULL;
     //print success message
-    printf("Set %d deleted.\n", index);
+    printf("Set at index %d deleted\n", index);
 }
 
 /* Denys Denysov (25461192) - initSetsArray, addElementsOption, removeElementsOption, storeSetsOption, loadSetsOption */
@@ -222,6 +235,7 @@ void addElementsOption(FILE *in, OrderedIntSet *setsArray[])
     int index;
     int number;
 
+    printf("Please enter index (0 - 9) for set to add elements to:\n");
     if (fscanf(in, "%d", &index) != 1)
     {
         printf("Could not read set index.\n");
@@ -233,24 +247,27 @@ void addElementsOption(FILE *in, OrderedIntSet *setsArray[])
         return;
     }
 
+    printf("Please enter element (enter value <0 to stop): ");
     while (fscanf(in, "%d", &number) == 1 && number >= 0)
     {
         switch (addElement(setsArray[index], number))
         {
         case NUMBER_ADDED:
-            printf("%d: NUMBER_ADDED\n", number);
+            printf("Result: SOK\n");
             break;
         case NUMBER_ALREADY_IN_SET:
-            printf("%d: NUMBER_ALREADY_IN_SET\n", number);
+            printf("Result: NUMBER_ALREADY_IN_SET\n");
             break;
         case ALLOCATION_ERROR:
-            printf("%d: ALLOCATION_ERROR\n", number);
+            printf("Result: ALLOCATION_ERROR\n");
             break;
         default:
             break;
         }
+        printf("Please enter element (enter value <0 to stop): ");
     }
 
+    printf("Final ordered set = ");
     printToStdout(setsArray[index]);
     printf("\n");
 }
@@ -271,6 +288,7 @@ void removeElementsOption(FILE *in, OrderedIntSet *setsArray[])
     int index;
     int number;
 
+    printf("Please enter index (0 - 9) for set to remove elements from:\n");
     if (fscanf(in, "%d", &index) != 1)
     {
         printf("Could not read set index.\n");
@@ -282,24 +300,27 @@ void removeElementsOption(FILE *in, OrderedIntSet *setsArray[])
         return;
     }
 
+    printf("Please enter element (enter value <0 to stop): ");
     while (fscanf(in, "%d", &number) == 1 && number >= 0)
     {
         switch (removeElement(setsArray[index], number))
         {
         case NUMBER_REMOVED:
-            printf("%d: NUMBER_REMOVED\n", number);
+            printf("Result: SOK\n");
             break;
         case NUMBER_NOT_IN_SET:
-            printf("%d: NUMBER_NOT_IN_SET\n", number);
+            printf("Result: NUMBER_NOT_IN_SET\n");
             break;
         case ALLOCATION_ERROR:
-            printf("%d: ALLOCATION_ERROR\n", number);
+            printf("Result: ALLOCATION_ERROR\n");
             break;
         default:
             break;
         }
+        printf("Please enter element (enter value <0 to stop): ");
     }
 
+    printf("Final ordered set = ");
     printToStdout(setsArray[index]);
     printf("\n");
 }
@@ -367,7 +388,7 @@ void storeSetsOption(OrderedIntSet *setsArray[])
     }
 
     fclose(file);
-    printf("Sets stored to %s.\n", SETS_FILE_NAME);
+    printf("All sets saved to file\n");
 }
 
 /**
@@ -389,6 +410,7 @@ void loadSetsOption(OrderedIntSet *setsArray[])
     int count;
     int value;
     int ok = 1;
+    int numSets = 0;
 
     file = fopen(SETS_FILE_NAME, "rb");
     if (file == NULL)
@@ -417,6 +439,7 @@ void loadSetsOption(OrderedIntSet *setsArray[])
             break;
         }
 
+        numSets++;
         loaded[i] = createOrderedSet();
         if (loaded[i] == NULL)
         {
@@ -460,5 +483,6 @@ void loadSetsOption(OrderedIntSet *setsArray[])
         setsArray[i] = loaded[i];
     }
 
-    printf("Sets loaded from %s.\n", SETS_FILE_NAME);
+    printf("expect %d number of sets\n", numSets);
+    printf("Loaded %d number of sets\n", numSets);
 }
